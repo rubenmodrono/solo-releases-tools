@@ -1,0 +1,1213 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SOLO Subidas</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23000'/%3E%3Cpath fill='%23fff' d='M18 23h14v6h-7v40h7v6H18zM82 23H68v6h7v40h-7v6h14z'/%3E%3Ccircle cx='50' cy='49' r='17' fill='%23E00815'/%3E%3C/svg%3E">
+<style>
+/* Estilo SOLO: negro, blanco y el punto rojo entre corchetes. */
+:root {
+  --bg: #000000; --surface: #0e0e0e; --surface-2: #1a1a1a; --border: #2a2a2a; --border-strong: #ffffff;
+  --text: #ffffff; --muted: #9a9a9a; --red: #e00815; --red-text: #ff3b45; --accent: var(--red); --accent-ink: #ffffff;
+  --ok: #ffffff; --doing: var(--red-text); --err: #ff3b45; --radius: 0px;
+  --font: "Helvetica Neue", Helvetica, Arial, system-ui, sans-serif;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.5 var(--font); -webkit-font-smoothing: antialiased; }
+[hidden] { display: none !important; }
+::selection { background: var(--red); color: #fff; }
+h1 { font-size: 28px; line-height: 1.15; margin: 4px 0 12px; font-weight: 800; letter-spacing: -.01em; text-transform: uppercase; }
+h2 { font-size: 13px; margin: 0 0 6px; font-weight: 800; text-transform: uppercase; letter-spacing: .14em; }
+h2::before { content: "["; color: var(--red-text); margin-right: 6px; }
+h2::after { content: "]"; color: var(--red-text); margin-left: 6px; }
+h2.sub { margin-top: 36px; }
+h3 { font-size: 11px; text-transform: uppercase; letter-spacing: .14em; color: var(--muted); margin: 22px 0 8px; display: flex; gap: 8px; align-items: center; font-weight: 700; }
+a { color: var(--red-text); }
+button { font: inherit; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; cursor: pointer; border-radius: 0; border: 1px solid var(--border); background: transparent; color: var(--text); padding: 8px 14px; min-height: 40px; transition: border-color .15s ease, background .15s ease; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible { outline: 2px solid var(--red-text); outline-offset: 2px; }
+button.primary { background: var(--red); border-color: var(--red); color: #fff; }
+button.primary:hover:not(:disabled) { background: #ff1a26; border-color: #ff1a26; }
+button.ghost:hover:not(:disabled) { border-color: var(--border-strong); }
+button.small { min-height: 32px; padding: 4px 10px; font-size: 11px; }
+select, input, textarea { font: inherit; color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 0; padding: 8px 10px; width: 100%; min-height: 40px; }
+select:hover, input:hover, textarea:hover { border-color: #444; }
+label { display: flex; flex-direction: column; gap: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+label select, label textarea, label input { text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 15px; }
+.eyebrow { font-size: 11px; letter-spacing: .2em; color: var(--muted); font-weight: 700; margin: 0; text-transform: uppercase; }
+.hint { color: var(--muted); font-size: 13px; margin: 0 0 8px; }
+.hint.warn { color: var(--text); background: var(--surface-2); padding: 8px 12px; border-left: 3px solid var(--red); }
+.empty { color: var(--muted); font-size: 14px; padding: 16px; border: 1px dashed var(--border); }
+.error { color: var(--err); min-height: 1.5em; margin: 6px 0; font-size: 14px; }
+.fine { color: var(--muted); font-size: 12px; margin-top: 16px; }
+
+/* Marca */
+.mark { width: 34px; height: 34px; color: var(--text); flex: none; }
+.brand { font-weight: 900; display: flex; align-items: center; gap: 10px; }
+.word { font-size: 22px; letter-spacing: .02em; display: inline-flex; align-items: center; line-height: 1; }
+.word .br { font-weight: 400; margin: 0 1px; }
+.word .o { width: .62em; height: .62em; border-radius: 50%; background: var(--red); display: inline-block; margin: 0 1px; }
+.app-name { font-size: 11px; font-weight: 700; letter-spacing: .2em; text-transform: uppercase; color: var(--muted); border-left: 1px solid var(--border); padding-left: 10px; margin-left: 2px; }
+.setup-logo .mark { width: 72px; height: 72px; margin: 0 0 16px -8px; }
+
+.setup { min-height: 100vh; display: grid; place-items: center; padding: 24px 16px; }
+.setup-card { max-width: 540px; width: 100%; background: var(--surface); border: 1px solid var(--border); border-top: 3px solid var(--red); padding: 32px; }
+.steps { padding-left: 20px; margin: 16px 0 24px; }
+.steps li { margin-bottom: 8px; }
+.steps li::marker { color: var(--red-text); font-weight: 700; }
+.steps ul { padding-left: 18px; margin: 4px 0; }
+#setup-form button.primary { width: 100%; margin-top: 4px; }
+
+.top { display: flex; align-items: center; gap: 20px; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--bg); position: sticky; top: 0; z-index: 5; flex-wrap: wrap; }
+.sprint { color: var(--muted); font-size: 12px; flex: 1; text-transform: uppercase; letter-spacing: .1em; font-weight: 700; }
+.top-right { display: flex; align-items: center; gap: 8px; }
+.who { font-size: 13px; font-weight: 700; margin-right: 4px; }
+
+.layout { display: grid; grid-template-columns: minmax(280px, 380px) 1fr; gap: 40px; max-width: 1180px; margin: 0 auto; padding: 28px 24px; }
+@media (max-width: 820px) { .layout { grid-template-columns: 1fr; padding: 16px; gap: 28px; } .upload-col { order: -1; } .top { padding: 12px 16px; } .sprint { flex-basis: 100%; order: 3; } .app-name { display: none; } }
+
+.count { color: var(--muted); font-size: 11px; }
+.count::before { content: "["; }
+.count::after { content: "]"; }
+.task-group.muted .task { opacity: .6; }
+.task { background: var(--surface); border: 1px solid var(--border); padding: 14px 16px; margin-bottom: 8px; cursor: pointer; transition: border-color .15s ease; }
+.task:hover { border-color: #555; }
+.task.selected { border-color: var(--border-strong); box-shadow: inset 4px 0 0 var(--red); }
+.task-top { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.task-title { margin: 8px 0 10px; font-weight: 500; }
+.task-actions { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.task-actions button { min-height: 32px; padding: 4px 10px; font-size: 11px; }
+.link { font-size: 12px; margin-left: auto; }
+.parent { font-size: 12px; color: var(--muted); }
+.badge { font-size: 10px; font-weight: 800; padding: 0; text-transform: uppercase; letter-spacing: .14em; display: inline-flex; align-items: center; gap: 6px; }
+.badge::before { content: ""; width: 8px; height: 8px; border-radius: 50%; border: 1.5px solid currentColor; }
+.badge.todo { color: var(--muted); }
+.badge.doing { color: var(--red-text); }
+.badge.doing::before { background: var(--red); border-color: var(--red); }
+.badge.done { color: var(--text); }
+.badge.done::before { background: var(--text); border-color: var(--text); }
+
+.drop { border: 1px dashed #444; padding: 44px 20px; text-align: center; background: var(--surface); transition: border-color .15s ease, background .15s ease; margin-top: 10px; position: relative; }
+.drop.over { border: 1px solid var(--red); background: #160204; }
+.drop.compact { padding: 20px; }
+.drop.compact .drop-small { display: none; }
+.drop-big { font-size: 17px; font-weight: 800; margin: 0 0 4px; text-transform: uppercase; letter-spacing: .02em; }
+.drop-small { color: var(--muted); margin: 0 0 18px; font-size: 14px; }
+.drop-buttons { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+
+.stage { background: var(--surface); border: 1px solid var(--border); padding: 18px; margin-top: 12px; }
+.fields { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.fields .wide { grid-column: 1 / -1; }
+@media (max-width: 520px) { .fields { grid-template-columns: 1fr; } }
+.staged { list-style: none; padding: 0; margin: 18px 0 8px; max-height: 320px; overflow: auto; }
+.staged li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.fmain { display: flex; justify-content: space-between; gap: 12px; }
+.fname { overflow-wrap: anywhere; }
+.fsize { color: var(--muted); font-size: 13px; white-space: nowrap; }
+.fdest { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }
+.tag { color: var(--red-text); margin-right: 6px; font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.bar { height: 2px; background: var(--surface-2); margin-top: 8px; overflow: hidden; }
+.bar span { display: block; height: 100%; background: var(--red); width: 0; transition: width .2s linear; }
+.stage-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+
+.browser .folder { background: var(--surface); border: 1px solid var(--border); margin-top: 8px; padding: 4px 16px 10px; }
+.folder summary { cursor: pointer; padding: 10px 0; display: flex; justify-content: space-between; font-weight: 700; list-style: none; text-transform: uppercase; letter-spacing: .06em; font-size: 13px; }
+.folder summary::-webkit-details-marker { display: none; }
+.folder > button { margin-bottom: 6px; }
+.folder ul { list-style: none; padding: 0; margin: 0; }
+.folder li { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-top: 1px solid var(--border); font-size: 14px; }
+.recent { list-style: none; padding: 0; margin: 8px 0 0; font-size: 14px; }
+.recent li { padding: 10px 0; border-bottom: 1px solid var(--border); }
+.recent .who { font-size: 13px; }
+.recent .when { color: var(--muted); font-size: 12px; }
+
+.toast { position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #fff; color: #000; font-weight: 600; padding: 12px 18px; border-left: 4px solid var(--red); max-width: min(560px, calc(100vw - 32px)); transition: opacity .2s ease, transform .2s ease; font-size: 14px; z-index: 10; }
+.toast.show { opacity: 1; transform: translate(-50%, 0); }
+.toast.error { background: var(--red); color: #fff; border-left-color: #fff; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+
+</style>
+</head>
+<body>
+<main id="setup" class="setup" hidden>
+  <div class="setup-card">
+    <div class="setup-logo"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M18 23h14v6h-7v40h7v6H18zM82 23H68v6h7v40h-7v6h14z"/><circle cx="50" cy="49" r="17" fill="var(--red)"/></svg></div><p class="eyebrow">SOLO RELEASES · Subidas</p>
+    <h1>Conecta tu cuenta</h1>
+    <p>Solo hace falta una vez. Vas a crear una "llave" en Azure DevOps para que esta página pueda ver tus tareas y subir tus archivos.</p>
+    <ol class="steps">
+      <li><a id="token-link" href="#" target="_blank" rel="noopener">Abre esta página de Azure DevOps</a> y pulsa <b>New Token</b>.</li>
+      <li>En <b>Name</b> escribe <i>Subidas</i>. En <b>Expiration</b> elige la fecha más lejana que te deje.</li>
+      <li>En <b>Scopes</b>, pulsa <b>Show all scopes</b> y marca:
+        <ul><li><b>Code</b>: Read &amp; write</li><li><b>Work Items</b>: Read &amp; write</li><li><b>Project and Team</b>: Read</li></ul></li>
+      <li>Pulsa <b>Create</b>, copia la llave y pégala aquí abajo.</li>
+    </ol>
+    <form id="setup-form">
+      <label for="token">Tu llave</label>
+      <input id="token" type="password" autocomplete="off" spellcheck="false" placeholder="Pega aquí la llave">
+      <p id="setup-error" class="error" role="alert"></p>
+      <button id="setup-save" class="primary" type="submit">Guardar y entrar</button>
+    </form>
+    <p class="fine">La llave se queda guardada solo en este navegador.</p>
+  </div>
+</main>
+
+<div id="app" hidden>
+  <header class="top">
+    <div class="brand"><svg class="mark" viewBox="0 0 100 100" aria-hidden="true"><path fill="currentColor" d="M18 23h14v6h-7v40h7v6H18zM82 23H68v6h7v40h-7v6h14z"/><circle cx="50" cy="49" r="17" fill="var(--red)"/></svg><span class="word">S<span class="br">[</span><span class="o"></span><span class="br">]</span>LO</span><span class="app-name">Subidas</span></div>
+    <div id="sprint" class="sprint">Cargando…</div>
+    <div class="top-right">
+      <span id="who" class="who"></span>
+      <button id="refresh" class="ghost small" type="button" title="Actualizar">Actualizar</button>
+      <button id="logout" class="ghost small" type="button">Salir</button>
+    </div>
+  </header>
+
+  <div class="layout">
+    <section class="col tasks-col" aria-labelledby="tasks-h">
+      <h2 id="tasks-h">Tareas del sprint</h2>
+      <p class="hint">Toca una tarea para apuntar ahí lo que subas.</p>
+      <div id="tasks"><p class="empty">Cargando tareas…</p></div>
+    </section>
+
+    <section class="col upload-col" aria-labelledby="up-h">
+      <h2 id="up-h">Subir avance</h2>
+      <div id="drop" class="drop">
+        <p class="drop-big">Arrastra aquí tus archivos o la carpeta del proyecto</p>
+        <p class="drop-small">Bounces, stems, referencias o el proyecto de Ableton entero</p>
+        <div class="drop-buttons">
+          <button id="pick-files" class="ghost" type="button">Elegir archivos</button>
+          <button id="pick-folder" class="ghost" type="button">Elegir carpeta</button>
+        </div>
+        <input id="file-input" type="file" multiple hidden>
+        <input id="folder-input" type="file" webkitdirectory hidden>
+      </div>
+
+      <div id="stage" class="stage" hidden>
+        <div class="fields">
+          <label>Tema<select id="tema"></select></label>
+          <label>¿Qué es?<select id="tipo"></select></label>
+          <label class="wide">Tarea<select id="tarea"></select></label>
+          <label class="wide">Nota para tu compañero (opcional)<textarea id="note" rows="2" placeholder="Ej.: he subido el bajo y cambiado el break"></textarea></label>
+        </div>
+        <ul id="staged" class="staged"></ul>
+        <p id="name-hint" class="hint warn" hidden>Consejo: poned versión en el nombre, por ejemplo <i>Tema01_Mezcla_v02_Nombre.wav</i>, para saber cuál es la última.</p>
+        <div class="stage-actions">
+          <button id="clear" class="ghost" type="button">Quitar todo</button>
+          <button id="upload" class="primary" type="button">Subir</button>
+        </div>
+      </div>
+
+      <h2 id="browser-title" class="sub">Archivos del tema</h2>
+      <div id="browser" class="browser"><p class="empty">Cargando…</p></div>
+
+      <h2 class="sub">Últimas subidas</h2>
+      <ul id="recent" class="recent"></ul>
+    </section>
+  </div>
+</div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="module">
+// SHA-256 incremental para el navegador: calcula el identificador LFS de
+// archivos grandes leyéndolos por trozos, sin cargarlos enteros en memoria.
+const K = new Uint32Array([
+  0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
+  0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+  0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
+  0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+  0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
+  0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+]);
+
+class Sha256 {
+  constructor() {
+    this.h = new Uint32Array([0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19]);
+    this.w = new Uint32Array(64);
+    this.buf = new Uint8Array(64);
+    this.bufLen = 0;
+    this.total = 0;
+  }
+
+  block(d, o) {
+    const w = this.w, h = this.h;
+    for (let i = 0; i < 16; i++) w[i] = (d[o + 4 * i] << 24) | (d[o + 4 * i + 1] << 16) | (d[o + 4 * i + 2] << 8) | d[o + 4 * i + 3];
+    for (let i = 16; i < 64; i++) {
+      const a = w[i - 15], b = w[i - 2];
+      const s0 = ((a >>> 7) | (a << 25)) ^ ((a >>> 18) | (a << 14)) ^ (a >>> 3);
+      const s1 = ((b >>> 17) | (b << 15)) ^ ((b >>> 19) | (b << 13)) ^ (b >>> 10);
+      w[i] = (w[i - 16] + s0 + w[i - 7] + s1) | 0;
+    }
+    let A = h[0], B = h[1], C = h[2], D = h[3], E = h[4], F = h[5], G = h[6], H = h[7];
+    for (let i = 0; i < 64; i++) {
+      const S1 = ((E >>> 6) | (E << 26)) ^ ((E >>> 11) | (E << 21)) ^ ((E >>> 25) | (E << 7));
+      const t1 = (H + S1 + ((E & F) ^ (~E & G)) + K[i] + w[i]) | 0;
+      const S0 = ((A >>> 2) | (A << 30)) ^ ((A >>> 13) | (A << 19)) ^ ((A >>> 22) | (A << 10));
+      const t2 = (S0 + ((A & B) ^ (A & C) ^ (B & C))) | 0;
+      H = G; G = F; F = E; E = (D + t1) | 0; D = C; C = B; B = A; A = (t1 + t2) | 0;
+    }
+    h[0] += A; h[1] += B; h[2] += C; h[3] += D; h[4] += E; h[5] += F; h[6] += G; h[7] += H;
+  }
+
+  update(data) {
+    let i = 0;
+    this.total += data.length;
+    if (this.bufLen) {
+      while (this.bufLen < 64 && i < data.length) this.buf[this.bufLen++] = data[i++];
+      if (this.bufLen < 64) return this;
+      this.block(this.buf, 0);
+      this.bufLen = 0;
+    }
+    for (; i + 64 <= data.length; i += 64) this.block(data, i);
+    while (i < data.length) this.buf[this.bufLen++] = data[i++];
+    return this;
+  }
+
+  hex() {
+    const bits = this.total * 8;
+    const pad = new Uint8Array((this.bufLen < 56 ? 56 : 120) - this.bufLen + 8);
+    pad[0] = 0x80;
+    const hi = Math.floor(bits / 2 ** 32), lo = bits >>> 0;
+    const n = pad.length;
+    pad[n - 8] = hi >>> 24; pad[n - 7] = hi >>> 16; pad[n - 6] = hi >>> 8; pad[n - 5] = hi;
+    pad[n - 4] = lo >>> 24; pad[n - 3] = lo >>> 16; pad[n - 2] = lo >>> 8; pad[n - 1] = lo;
+    const total = this.total;
+    this.update(pad);
+    this.total = total;
+    return [...this.h].map((x) => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  }
+}
+
+// Hash de un File/Blob por trozos de 8 MB, con progreso 0..1.
+async function hashBlob(blob, onProgress) {
+  const s = new Sha256();
+  const CH = 8 * 1024 * 1024;
+  for (let off = 0; off < blob.size; off += CH) {
+    s.update(new Uint8Array(await blob.slice(off, off + CH).arrayBuffer()));
+    if (onProgress) onProgress(Math.min(1, (off + CH) / blob.size));
+  }
+  return s.hex();
+}
+
+// Núcleo común de las dos herramientas: habla con Azure DevOps por REST.
+// Funciona igual en el navegador y en Node 18+ (usa fetch global).
+// No necesita Git instalado: los archivos pesados se suben por el protocolo
+// de Git LFS y el commit se crea con la API de "pushes".
+
+const API = 'api-version=7.1';
+const ZERO = '0000000000000000000000000000000000000000';
+
+// Extensiones que van por LFS si el repo no tiene .gitattributes legible.
+const LFS_DEFAULT = [
+  'wav', 'aif', 'aiff', 'flac', 'mp3', 'm4a', 'ogg',
+  'als', 'alp', 'adg', 'adv', 'agr', 'alc', 'ams', 'amxd',
+  'fxp', 'fxb', 'vstpreset', 'zip', 'png', 'jpg', 'psd',
+];
+
+// Lo que nunca se sube (Ableton lo regenera o es basura del sistema).
+const IGNORE_DEFAULT = ['*.asd', 'Backup/', 'Ableton Project Info/', '.DS_Store', '._*', 'Thumbs.db', 'desktop.ini', '*.tmp', '*.bak'];
+
+const b64 = (s) => (typeof btoa === 'function' ? btoa(s) : Buffer.from(s, 'binary').toString('base64'));
+
+function pointerText(oid, size) {
+  return `version https://git-lfs.github.com/spec/v1\noid sha256:${oid}\nsize ${size}\n`;
+}
+
+function parsePointer(text) {
+  if (!text || text.length > 400 || !text.startsWith('version https://git-lfs')) return null;
+  const oid = /oid sha256:([0-9a-f]{64})/.exec(text);
+  const size = /size (\d+)/.exec(text);
+  return oid && size ? { oid: oid[1], size: Number(size[1]) } : null;
+}
+
+// Convierte "*.wav filter=lfs ..." en una lista de extensiones LFS.
+function parseGitattributes(text) {
+  const exts = new Set();
+  for (const line of text.split(/\r?\n/)) {
+    const m = /^\s*\*\.([A-Za-z0-9]+)\s+.*filter=lfs/.exec(line);
+    if (m) exts.add(m[1].toLowerCase());
+  }
+  return [...exts];
+}
+
+function isLfsPath(path, exts) {
+  const m = /\.([^./]+)$/.exec(path);
+  return !!m && exts.includes(m[1].toLowerCase());
+}
+
+// Coincidencia sencilla con patrones tipo .gitignore (sin negaciones).
+function isIgnored(path, patterns = IGNORE_DEFAULT) {
+  const parts = path.replace(/^\/+/, '').split('/');
+  const name = parts[parts.length - 1];
+  for (const p of patterns) {
+    if (p.endsWith('/')) {
+      const dir = p.replace(/^\*\*\//, '').slice(0, -1);
+      if (parts.slice(0, -1).includes(dir)) return true;
+    } else {
+      const re = new RegExp('^' + p.replace(/[.+^${}()|[\]\\]/g, '\\$&').replace(/\*/g, '.*').replace(/\?/g, '.') + '$');
+      if (re.test(name)) return true;
+    }
+  }
+  return false;
+}
+
+class AzdoError extends Error {
+  constructor(message, status, body) {
+    super(message);
+    this.status = status;
+    this.body = body;
+  }
+}
+
+class Azdo {
+  constructor({ org, project, repo, token, branch = 'main', team }) {
+    this.org = org;
+    this.project = project;
+    this.repo = repo || project;
+    this.branch = branch;
+    this.team = team || `${project} Team`;
+    this.auth = 'Basic ' + b64(':' + token);
+    this.base = `https://dev.azure.com/${encodeURIComponent(org)}`;
+    this.proj = `${this.base}/${encodeURIComponent(project)}`;
+    this.repoApi = `${this.proj}/_apis/git/repositories/${encodeURIComponent(this.repo)}`;
+    this.gitUrl = `${this.proj}/_git/${encodeURIComponent(this.repo)}`;
+    this._lfsExts = null;
+    this._states = null;
+  }
+
+  async req(url, { method = 'GET', body, headers = {}, raw = false } = {}) {
+    const h = { Authorization: this.auth, ...headers };
+    if (body !== undefined && !(typeof body === 'string' || body instanceof ArrayBuffer || ArrayBuffer.isView(body) || isStreamLike(body))) {
+      h['Content-Type'] = h['Content-Type'] || 'application/json';
+      body = JSON.stringify(body);
+    }
+    const opts = { method, headers: h, body };
+    if (isNodeStream(body)) opts.duplex = 'half';
+    const res = await fetch(url, opts);
+    if (raw) {
+      if (!res.ok) throw new AzdoError(await describe(res), res.status);
+      return res;
+    }
+    const text = await res.text();
+    if (!res.ok || /^\s*<!DOCTYPE|^\s*<html/i.test(text)) {
+      if (res.status === 401 || res.status === 203 || /<html/i.test(text)) {
+        throw new AzdoError('La llave de acceso no es válida o ha caducado.', 401);
+      }
+      throw new AzdoError(errorMessage(text) || `Error ${res.status}`, res.status, text);
+    }
+    return text ? JSON.parse(text) : null;
+  }
+
+  // ---------- Identidad y repo ----------
+
+  async me() {
+    const d = await this.req(`${this.base}/_apis/connectionData`);
+    const u = d.authenticatedUser;
+    return { id: u.id, displayName: u.providerDisplayName || u.customDisplayName };
+  }
+
+  async repoInfo() {
+    if (!this._repo) this._repo = await this.req(`${this.repoApi}?${API}`);
+    return this._repo;
+  }
+
+  async getHead(branch = this.branch) {
+    const d = await this.req(`${this.repoApi}/refs?filter=heads/${encodeURIComponent(branch)}&${API}`);
+    const ref = d.value.find((r) => r.name === `refs/heads/${branch}`);
+    return ref ? ref.objectId : null;
+  }
+
+  async createBranch(name, fromCommit) {
+    const d = await this.req(`${this.repoApi}/refs?${API}`, {
+      method: 'POST',
+      body: [{ name: `refs/heads/${name}`, oldObjectId: ZERO, newObjectId: fromCommit }],
+    });
+    if (!d.value[0].success) throw new AzdoError('No se pudo crear la rama ' + name);
+  }
+
+  async deleteBranch(name) {
+    const head = await this.getHead(name);
+    if (!head) return;
+    await this.req(`${this.repoApi}/refs?${API}`, {
+      method: 'POST',
+      body: [{ name: `refs/heads/${name}`, oldObjectId: head, newObjectId: ZERO }],
+    });
+  }
+
+  // Todos los archivos del repo en un commit: [{path, objectId}] (path sin "/" inicial).
+  async listFiles(commit) {
+    const v = commit ? `versionDescriptor.versionType=commit&versionDescriptor.version=${commit}` : `versionDescriptor.version=${encodeURIComponent(this.branch)}`;
+    const d = await this.req(`${this.repoApi}/items?scopePath=/&recursionLevel=Full&${v}&${API}`);
+    return d.value.filter((i) => i.gitObjectType === 'blob').map((i) => ({ path: i.path.replace(/^\//, ''), objectId: i.objectId }));
+  }
+
+  async listFolders(commit) {
+    const v = commit ? `versionDescriptor.versionType=commit&versionDescriptor.version=${commit}` : `versionDescriptor.version=${encodeURIComponent(this.branch)}`;
+    const d = await this.req(`${this.repoApi}/items?scopePath=/&recursionLevel=Full&${v}&${API}`);
+    return d.value.filter((i) => i.isFolder && i.path !== '/').map((i) => i.path.replace(/^\//, ''));
+  }
+
+  async blobResponse(objectId) {
+    return this.req(`${this.repoApi}/blobs/${objectId}?$format=octetstream&${API}`, { raw: true });
+  }
+
+  async blobText(objectId) {
+    return (await this.blobResponse(objectId)).text();
+  }
+
+  async lfsExtensions() {
+    if (this._lfsExts) return this._lfsExts;
+    try {
+      const res = await this.req(`${this.repoApi}/items?path=/.gitattributes&versionDescriptor.version=${encodeURIComponent(this.branch)}&$format=octetstream&${API}`, { raw: true });
+      const exts = parseGitattributes(await res.text());
+      this._lfsExts = exts.length ? exts : LFS_DEFAULT;
+    } catch {
+      this._lfsExts = LFS_DEFAULT;
+    }
+    return this._lfsExts;
+  }
+
+  async recentCommits(top = 10) {
+    const d = await this.req(`${this.repoApi}/commits?searchCriteria.itemVersion.version=${encodeURIComponent(this.branch)}&searchCriteria.$top=${top}&${API}`);
+    return d.value.map((c) => ({ id: c.commitId, comment: c.comment, author: c.author.name, date: c.author.date }));
+  }
+
+  // ---------- Git LFS ----------
+
+  async lfsBatch(operation, objects) {
+    const d = await this.req(`${this.gitUrl}.git/info/lfs/objects/batch`, {
+      method: 'POST',
+      headers: { Accept: 'application/vnd.git-lfs+json', 'Content-Type': 'application/vnd.git-lfs+json' },
+      body: JSON.stringify({ operation, transfers: ['basic'], objects }),
+    });
+    for (const o of d.objects) if (o.error) throw new AzdoError(`LFS: ${o.error.message}`, o.error.code);
+    return d.objects;
+  }
+
+  // body: Blob/File en el navegador, Buffer o stream en Node. Devuelve false si ya existía.
+  async lfsUpload({ oid, size }, body) {
+    const [obj] = await this.lfsBatch('upload', [{ oid, size }]);
+    const up = obj.actions && obj.actions.upload;
+    if (!up) return false;
+    const headers = { Accept: 'application/vnd.git-lfs' };
+    for (const [k, v] of Object.entries(up.header || {})) if (!/transfer-encoding/i.test(k)) headers[k] = v;
+    headers['Content-Type'] = 'application/octet-stream';
+    if (typeof size === 'number' && isNodeStream(body)) headers['Content-Length'] = String(size);
+    await this.req(cleanUrl(up.href), { method: 'PUT', headers, body, raw: true });
+    return true;
+  }
+
+  async lfsDownload({ oid, size }) {
+    const [obj] = await this.lfsBatch('download', [{ oid, size }]);
+    const dl = obj.actions && obj.actions.download;
+    if (!dl) throw new AzdoError('El archivo no está en el almacén de LFS.');
+    return this.req(cleanUrl(dl.href), { headers: { Accept: 'application/vnd.git-lfs', ...(dl.header || {}) }, raw: true });
+  }
+
+  // Descarga el contenido real de un archivo del repo (resuelve punteros LFS).
+  async fileResponse(objectId) {
+    const res = await this.blobResponse(objectId);
+    const len = Number(res.headers.get('content-length') || 0);
+    if (len && len > 400) return res;
+    const buf = await res.arrayBuffer();
+    const text = new TextDecoder().decode(buf);
+    const ptr = parsePointer(text);
+    if (ptr) return this.lfsDownload(ptr);
+    return new Response(buf);
+  }
+
+  // ---------- Commits ----------
+
+  // changes: [{path, kind:'add'|'edit'|'delete', text?, base64?}]
+  async push({ changes, comment, oldObjectId, branch = this.branch }) {
+    const commitChanges = changes.map((c) => {
+      const item = { path: '/' + c.path.replace(/^\/+/, '') };
+      if (c.kind === 'delete') return { changeType: 'delete', item };
+      const newContent = c.base64 !== undefined ? { content: c.base64, contentType: 'base64encoded' } : { content: c.text, contentType: 'rawtext' };
+      return { changeType: c.kind, item, newContent };
+    });
+    const d = await this.req(`${this.repoApi}/pushes?${API}`, {
+      method: 'POST',
+      body: { refUpdates: [{ name: `refs/heads/${branch}`, oldObjectId }], commits: [{ comment, changes: commitChanges }] },
+    });
+    return d.commits[0].commitId;
+  }
+
+  // ---------- Boards ----------
+
+  async taskStates() {
+    if (!this._states) {
+      const d = await this.req(`${this.proj}/_apis/wit/workitemtypes/Task/states?${API}`);
+      const by = (cat) => (d.value.find((s) => s.category === cat) || {}).name;
+      this._states = { todo: by('Proposed'), doing: by('InProgress'), done: by('Completed'), all: d.value };
+    }
+    return this._states;
+  }
+
+  async currentSprint() {
+    const d = await this.req(`${this.proj}/${encodeURIComponent(this.team)}/_apis/work/teamsettings/iterations?$timeframe=current&${API}`);
+    const it = d.value[0];
+    if (!it) return null;
+    return { name: it.name, path: it.path, start: it.attributes.startDate, end: it.attributes.finishDate };
+  }
+
+  // Tareas del sprint actual con su historia padre.
+  async sprintTasks(sprint) {
+    sprint = sprint || (await this.currentSprint());
+    if (!sprint) return { sprint: null, tasks: [] };
+    const q = `SELECT [System.Id] FROM WorkItems WHERE [System.TeamProject] = @project AND [System.WorkItemType] = 'Task' AND [System.IterationPath] = '${sprint.path.replace(/'/g, "''")}' ORDER BY [System.Id]`;
+    const w = await this.req(`${this.proj}/_apis/wit/wiql?${API}`, { method: 'POST', body: { query: q } });
+    const ids = w.workItems.map((x) => x.id);
+    if (!ids.length) return { sprint, tasks: [] };
+    const items = await this.workItems(ids, ['System.Title', 'System.State', 'System.AssignedTo', 'System.Parent', 'System.Description']);
+    const parentIds = [...new Set(items.map((i) => i.fields['System.Parent']).filter(Boolean))];
+    const parents = parentIds.length ? await this.workItems(parentIds, ['System.Title']) : [];
+    const pt = Object.fromEntries(parents.map((p) => [p.id, p.fields['System.Title']]));
+    const tasks = items.map((i) => {
+      const a = i.fields['System.AssignedTo'];
+      return {
+        id: i.id,
+        title: i.fields['System.Title'],
+        state: i.fields['System.State'],
+        assignedTo: a ? { id: a.id, name: a.displayName } : null,
+        parentId: i.fields['System.Parent'] || null,
+        parentTitle: pt[i.fields['System.Parent']] || '',
+        url: `${this.proj}/_workitems/edit/${i.id}`,
+      };
+    });
+    return { sprint, tasks };
+  }
+
+  async workItems(ids, fields) {
+    const out = [];
+    for (let i = 0; i < ids.length; i += 200) {
+      const d = await this.req(`${this.proj}/_apis/wit/workitems?ids=${ids.slice(i, i + 200).join(',')}&fields=${fields.join(',')}&${API}`);
+      out.push(...d.value);
+    }
+    return out;
+  }
+
+  async patchWorkItem(id, ops) {
+    return this.req(`${this.proj}/_apis/wit/workitems/${id}?${API}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json-patch+json' },
+      body: JSON.stringify(ops),
+    });
+  }
+
+  async setTaskState(id, which) {
+    const s = await this.taskStates();
+    return this.patchWorkItem(id, [{ op: 'add', path: '/fields/System.State', value: s[which] }]);
+  }
+
+  async assignToMe(id) {
+    const me = await this.me();
+    return this.patchWorkItem(id, [{ op: 'add', path: '/fields/System.AssignedTo', value: me.id }]);
+  }
+
+  async addComment(id, text) {
+    return this.req(`${this.proj}/_apis/wit/workItems/${id}/comments?api-version=7.1-preview.4`, { method: 'POST', body: { text } });
+  }
+
+  // Enlaza un commit a la tarea (aparece en "Development" de la tarea).
+  async linkCommit(id, commitId) {
+    const r = await this.repoInfo();
+    const url = `vstfs:///Git/Commit/${r.project.id}%2F${r.id}%2F${commitId}`;
+    return this.patchWorkItem(id, [{ op: 'add', path: '/relations/-', value: { rel: 'ArtifactLink', url, attributes: { name: 'Fixed in Commit' } } }]);
+  }
+
+  // Tras una subida: enlace, comentario y pasar la tarea a "en curso" si estaba pendiente.
+  async afterUpload(taskId, commitId, files, note) {
+    if (!taskId) return;
+    await this.linkCommit(taskId, commitId);
+    const list = files.slice(0, 15).map((f) => `<li>${escapeHtml(f)}</li>`).join('') + (files.length > 15 ? `<li>y ${files.length - 15} más</li>` : '');
+    const link = `${this.gitUrl}/commit/${commitId}`;
+    await this.addComment(taskId, `${note ? `<p>${escapeHtml(note)}</p>` : ''}<p>Subida de ${files.length} archivo(s) (<a href="${link}">ver cambios</a>):</p><ul>${list}</ul>`);
+    const s = await this.taskStates();
+    const [t] = await this.workItems([taskId], ['System.State']);
+    if (t && t.fields['System.State'] === s.todo) await this.setTaskState(taskId, 'doing');
+  }
+}
+
+function cleanUrl(href) {
+  const u = new URL(href);
+  u.username = '';
+  u.password = '';
+  return u.toString();
+}
+
+function isNodeStream(b) {
+  return b && typeof b === 'object' && typeof b.pipe === 'function';
+}
+
+function isStreamLike(b) {
+  return isNodeStream(b) || (typeof Blob !== 'undefined' && b instanceof Blob) || (typeof ReadableStream !== 'undefined' && b instanceof ReadableStream);
+}
+
+function errorMessage(text) {
+  try {
+    return JSON.parse(text).message;
+  } catch {
+    return text && text.slice(0, 200);
+  }
+}
+
+async function describe(res) {
+  if (res.status === 401 || res.status === 203) return 'La llave de acceso no es válida o ha caducado.';
+  return errorMessage(await res.text().catch(() => '')) || `Error ${res.status}`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+}
+
+
+// ---------- Configuración (cámbiala si movéis el proyecto) ----------
+const CONFIG = { org: 'rubenmodrono', project: 'SOLO - RELEASES', repo: 'SOLO - RELEASES', branch: 'main' };
+const TOKEN_KEY = 'solo-releases-llave';
+const PREFS_KEY = 'solo-releases-prefs';
+
+const TYPES = [
+  { id: 'ref', label: 'Referencia', folder: '01_Referencias' },
+  { id: 'als', label: 'Proyecto de Ableton', folder: 'Ableton' },
+  { id: 'bounce', label: 'Bounce para escuchar', folder: 'Bounces' },
+  { id: 'stems', label: 'Stems', folder: 'Stems' },
+  { id: 'master', label: 'Máster', folder: 'Master' },
+];
+const AUDIO = /\.(wav|aif|aiff|flac|mp3|m4a|ogg)$/i;
+
+const $ = (s, el = document) => el.querySelector(s);
+const store = {
+  get(k, d) { try { const v = localStorage.getItem(k); return v === null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch { /* sin almacenamiento */ } },
+  del(k) { try { localStorage.removeItem(k); } catch { /* nada */ } },
+};
+
+const state = {
+  az: null, me: null, sprint: null, tasks: [], files: [], temas: [], states: null,
+  selectedTask: null, staged: [], busy: false, prefs: store.get(PREFS_KEY, {}),
+};
+
+// ---------- Arranque ----------
+
+async function start() {
+  const token = store.get(TOKEN_KEY, null);
+  if (!token) return showSetup();
+  state.az = new Azdo({ ...CONFIG, token });
+  showApp();
+  try {
+    state.me = await state.az.me();
+    $('#who').textContent = state.me.displayName;
+    await Promise.all([loadTasks(), loadFiles()]);
+  } catch (e) {
+    if (e.status === 401) { store.del(TOKEN_KEY); return showSetup('Tu llave no funciona o ha caducado. Crea una nueva.'); }
+    toast(e.message, 'error');
+  }
+}
+
+function showSetup(msg) {
+  $('#app').hidden = true;
+  $('#setup').hidden = false;
+  $('#setup-error').textContent = msg || '';
+  $('#token-link').href = `https://dev.azure.com/${CONFIG.org}/_usersSettings/tokens`;
+}
+
+function showApp() {
+  $('#setup').hidden = true;
+  $('#app').hidden = false;
+}
+
+$('#setup-form').addEventListener('submit', async (ev) => {
+  ev.preventDefault();
+  const token = $('#token').value.trim();
+  const btn = $('#setup-save');
+  if (!token) { $('#setup-error').textContent = 'Pega aquí la llave que has creado.'; return; }
+  btn.disabled = true;
+  btn.textContent = 'Comprobando…';
+  try {
+    const az = new Azdo({ ...CONFIG, token });
+    await az.me();
+    await az.repoInfo();
+    store.set(TOKEN_KEY, token);
+    $('#token').value = '';
+    start();
+  } catch (e) {
+    $('#setup-error').textContent = e.status === 401 ? 'Esa llave no funciona. Revisa que la has copiado entera y que tiene los permisos de la lista.' : e.message;
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Guardar y entrar';
+  }
+});
+
+$('#logout').addEventListener('click', () => {
+  if (!confirm('¿Quitar tu llave de este navegador? Tendrás que pegarla de nuevo para entrar.')) return;
+  store.del(TOKEN_KEY);
+  location.reload();
+});
+
+// ---------- Tareas ----------
+
+async function loadTasks() {
+  const [{ sprint, tasks }, states] = await Promise.all([state.az.sprintTasks(), state.az.taskStates()]);
+  state.sprint = sprint;
+  state.tasks = tasks;
+  state.states = states;
+  if (!state.selectedTask || !tasks.some((t) => t.id === state.selectedTask)) {
+    const mine = tasks.find((t) => isMine(t) && t.state === states.doing) || tasks.find((t) => isMine(t) && t.state !== states.done);
+    state.selectedTask = mine ? mine.id : null;
+  }
+  renderSprint();
+  renderTasks();
+  renderStageControls();
+}
+
+const isMine = (t) => t.assignedTo && state.me && t.assignedTo.id === state.me.id;
+
+function renderSprint() {
+  const el = $('#sprint');
+  if (!state.sprint) { el.textContent = 'Sin sprint en curso'; return; }
+  const fmt = (d) => new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short', timeZone: 'UTC' });
+  const days = (d) => Math.ceil((new Date(d) - Date.now()) / 86400000);
+  const tail = days(state.sprint.start) > 0 ? ` · empieza en ${days(state.sprint.start)} días` : ` · quedan ${days(state.sprint.end) + 1} días`;
+  el.textContent = `${state.sprint.name} · ${fmt(state.sprint.start)} – ${fmt(state.sprint.end)}${tail}`;
+}
+
+function renderTasks() {
+  const list = $('#tasks');
+  list.innerHTML = '';
+  if (!state.tasks.length) {
+    list.innerHTML = '<p class="empty">No hay tareas en este sprint todavía. Las verás aquí en cuanto se planifiquen.</p>';
+    return;
+  }
+  const s = state.states;
+  const groups = [
+    ['Mis tareas', state.tasks.filter((t) => isMine(t) && t.state !== s.done)],
+    ['Sin dueño, puedes cogerlas', state.tasks.filter((t) => !t.assignedTo && t.state !== s.done)],
+    ['De otros', state.tasks.filter((t) => t.assignedTo && !isMine(t) && t.state !== s.done)],
+    ['Terminadas', state.tasks.filter((t) => t.state === s.done)],
+  ];
+  for (const [title, tasks] of groups) {
+    if (!tasks.length) continue;
+    const g = document.createElement('section');
+    g.className = 'task-group' + (title === 'Terminadas' || title === 'De otros' ? ' muted' : '');
+    g.innerHTML = `<h3>${title} <span class="count">${tasks.length}</span></h3>`;
+    for (const t of tasks) g.appendChild(taskCard(t));
+    list.appendChild(g);
+  }
+}
+
+function taskCard(t) {
+  const s = state.states;
+  const el = document.createElement('article');
+  el.className = 'task' + (t.id === state.selectedTask ? ' selected' : '');
+  const badge = t.state === s.done ? 'done' : t.state === s.doing ? 'doing' : 'todo';
+  const badgeText = t.state === s.done ? 'Terminada' : t.state === s.doing ? 'En curso' : 'Pendiente';
+  el.innerHTML = `
+    <div class="task-top">
+      <span class="badge ${badge}">${badgeText}</span>
+      ${t.parentTitle ? `<span class="parent">${escapeHtml(t.parentTitle)}</span>` : ''}
+    </div>
+    <p class="task-title">${escapeHtml(t.title)}</p>
+    <div class="task-actions"></div>`;
+  const actions = $('.task-actions', el);
+  const add = (label, cls, fn) => {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = cls;
+    b.textContent = label;
+    b.addEventListener('click', async (ev) => {
+      ev.stopPropagation();
+      b.disabled = true;
+      try { await fn(); } catch (e) { toast(e.message, 'error'); } finally { b.disabled = false; }
+    });
+    actions.appendChild(b);
+  };
+  if (t.state !== s.done) {
+    if (!t.assignedTo) add('Me la quedo', 'ghost', async () => { await state.az.assignToMe(t.id); await loadTasks(); toast('Tarea asignada a ti'); });
+    if (t.state === s.todo) add('Empezar', 'ghost', async () => { await state.az.setTaskState(t.id, 'doing'); await loadTasks(); });
+    add('Marcar terminada', 'ghost', async () => { await state.az.setTaskState(t.id, 'done'); await loadTasks(); toast('¡Tarea terminada!'); });
+  }
+  const open = document.createElement('a');
+  open.href = t.url;
+  open.target = '_blank';
+  open.rel = 'noopener';
+  open.className = 'link';
+  open.textContent = 'Ver en el tablero';
+  open.addEventListener('click', (ev) => ev.stopPropagation());
+  actions.appendChild(open);
+  el.addEventListener('click', () => {
+    if (t.state === s.done) return;
+    state.selectedTask = t.id;
+    renderTasks();
+    renderStageControls();
+  });
+  return el;
+}
+
+// ---------- Archivos del repo ----------
+
+async function loadFiles() {
+  const files = await state.az.listFiles();
+  state.files = files;
+  const temas = [...new Set(files.map((f) => /^Temas\/([^/]+)\//.exec(f.path)).filter(Boolean).map((m) => m[1]))].sort();
+  state.temas = temas.length ? temas : ['Tema01'];
+  if (!state.temas.includes(state.prefs.tema)) state.prefs.tema = state.temas[state.temas.length - 1];
+  renderStageControls();
+  renderBrowser();
+  renderRecent();
+}
+
+function renderBrowser() {
+  const tema = state.prefs.tema;
+  const el = $('#browser');
+  $('#browser-title').textContent = `Archivos de ${tema}`;
+  const prefix = `Temas/${tema}/`;
+  const files = state.files.filter((f) => f.path.startsWith(prefix) && !/(^|\/)(\.gitkeep|\.DS_Store)$/.test(f.path));
+  if (!files.length) {
+    el.innerHTML = '<p class="empty">Todavía no hay archivos en este tema. Lo que subas aparecerá aquí.</p>';
+    return;
+  }
+  const byFolder = {};
+  for (const f of files) {
+    const rest = f.path.slice(prefix.length);
+    const folder = rest.includes('/') ? rest.split('/')[0] : '';
+    (byFolder[folder] = byFolder[folder] || []).push(f);
+  }
+  el.innerHTML = '';
+  for (const folder of Object.keys(byFolder).sort()) {
+    const sec = document.createElement('details');
+    sec.className = 'folder';
+    sec.open = Object.keys(byFolder).length <= 3;
+    const items = byFolder[folder];
+    sec.innerHTML = `<summary><span>${escapeHtml(folder || 'Raíz del tema')}</span><span class="count">${items.length}</span></summary>`;
+    const zipBtn = document.createElement('button');
+    zipBtn.type = 'button';
+    zipBtn.className = 'ghost small';
+    zipBtn.textContent = 'Descargar carpeta';
+    zipBtn.addEventListener('click', () => downloadZip(folder || tema, items, prefix + (folder ? folder + '/' : ''), zipBtn));
+    const ul = document.createElement('ul');
+    for (const f of items) {
+      const li = document.createElement('li');
+      const name = f.path.slice(prefix.length + (folder ? folder.length + 1 : 0));
+      li.innerHTML = `<span class="fname">${escapeHtml(name)}</span>`;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'ghost small';
+      b.textContent = 'Descargar';
+      b.addEventListener('click', () => downloadOne(f, b));
+      li.appendChild(b);
+      ul.appendChild(li);
+    }
+    sec.appendChild(zipBtn);
+    sec.appendChild(ul);
+    el.appendChild(sec);
+  }
+}
+
+async function downloadOne(f, btn) {
+  btn.disabled = true;
+  btn.textContent = 'Descargando…';
+  try {
+    const blob = await (await state.az.fileResponse(f.objectId)).blob();
+    saveBlob(blob, f.path.split('/').pop());
+  } catch (e) {
+    toast('No se pudo descargar: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Descargar';
+  }
+}
+
+async function downloadZip(name, items, prefix, btn) {
+  btn.disabled = true;
+  try {
+    if (!window.fflate) await loadScript('https://cdn.jsdelivr.net/npm/fflate@0.8.2/umd/index.js');
+    const entries = {};
+    let i = 0;
+    for (const f of items) {
+      btn.textContent = `Preparando ${++i}/${items.length}…`;
+      entries[f.path.slice(prefix.length)] = [new Uint8Array(await (await state.az.fileResponse(f.objectId)).arrayBuffer()), { level: 0 }];
+    }
+    saveBlob(new Blob([window.fflate.zipSync(entries)], { type: 'application/zip' }), `${name}.zip`);
+  } catch (e) {
+    toast('No se pudo preparar la carpeta: ' + e.message, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Descargar carpeta';
+  }
+}
+
+function saveBlob(blob, name) {
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 30000);
+}
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    const s = document.createElement('script');
+    s.src = src;
+    s.onload = res;
+    s.onerror = () => rej(new Error('sin conexión con la librería de zip'));
+    document.head.appendChild(s);
+  });
+}
+
+async function renderRecent() {
+  const el = $('#recent');
+  try {
+    const commits = await state.az.recentCommits(8);
+    el.innerHTML = commits.map((c) => `<li><span class="who">${escapeHtml(c.author)}</span> <span class="when">${relTime(c.date)}</span><br>${escapeHtml(c.comment.split('\n')[0])}</li>`).join('');
+  } catch {
+    el.innerHTML = '';
+  }
+}
+
+function relTime(d) {
+  const m = Math.round((Date.now() - new Date(d)) / 60000);
+  if (m < 1) return 'ahora';
+  if (m < 60) return `hace ${m} min`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `hace ${h} h`;
+  return new Date(d).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' });
+}
+
+// ---------- Subidas ----------
+
+const drop = $('#drop');
+['dragenter', 'dragover'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave', 'drop'].forEach((t) => drop.addEventListener(t, (e) => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', async (e) => {
+  const items = [...e.dataTransfer.items].map((i) => (i.webkitGetAsEntry ? i.webkitGetAsEntry() : null)).filter(Boolean);
+  if (items.length) {
+    const out = [];
+    for (const it of items) await walkEntry(it, '', out);
+    addStaged(out);
+  } else {
+    addStaged([...e.dataTransfer.files].map((f) => ({ file: f, rel: f.name })));
+  }
+});
+$('#pick-files').addEventListener('click', () => $('#file-input').click());
+$('#pick-folder').addEventListener('click', () => $('#folder-input').click());
+$('#file-input').addEventListener('change', (e) => { addStaged([...e.target.files].map((f) => ({ file: f, rel: f.name }))); e.target.value = ''; });
+$('#folder-input').addEventListener('change', (e) => { addStaged([...e.target.files].map((f) => ({ file: f, rel: f.webkitRelativePath || f.name }))); e.target.value = ''; });
+
+function walkEntry(entry, prefix, out) {
+  return new Promise((resolve) => {
+    if (entry.isFile) {
+      entry.file((f) => { out.push({ file: f, rel: prefix + f.name }); resolve(); }, () => resolve());
+    } else if (entry.isDirectory) {
+      const reader = entry.createReader();
+      const all = [];
+      const readBatch = () => reader.readEntries(async (batch) => {
+        if (!batch.length) {
+          for (const c of all) await walkEntry(c, prefix + entry.name + '/', out);
+          resolve();
+        } else {
+          all.push(...batch);
+          readBatch();
+        }
+      }, () => resolve());
+      readBatch();
+    } else resolve();
+  });
+}
+
+function addStaged(list) {
+  const fresh = list.filter((x) => !isIgnored(x.rel));
+  const skipped = list.length - fresh.length;
+  for (const x of fresh) if (!state.staged.some((s) => s.rel === x.rel)) state.staged.push(x);
+  if (!state.prefs.typeTouched) state.prefs.type = guessType(state.staged);
+  if (skipped) toast(`${skipped} archivo(s) que Ableton crea solo no se subirán (copias de seguridad, .asd…)`);
+  renderStaged();
+}
+
+function guessType(staged) {
+  if (staged.some((s) => /\.als$/i.test(s.rel))) return 'als';
+  if (staged.length && staged.every((s) => AUDIO.test(s.rel))) return staged.length > 3 ? 'stems' : 'bounce';
+  return state.prefs.type || 'bounce';
+}
+
+function destFor(rel) {
+  const type = TYPES.find((t) => t.id === state.prefs.type) || TYPES[2];
+  return `Temas/${state.prefs.tema}/${type.folder}/${rel}`;
+}
+
+function renderStageControls() {
+  const tema = $('#tema');
+  tema.innerHTML = state.temas.map((t) => `<option ${t === state.prefs.tema ? 'selected' : ''}>${escapeHtml(t)}</option>`).join('');
+  $('#tipo').innerHTML = TYPES.map((t) => `<option value="${t.id}" ${t.id === state.prefs.type ? 'selected' : ''}>${t.label}</option>`).join('');
+  const open = state.tasks.filter((t) => t.state !== (state.states && state.states.done));
+  $('#tarea').innerHTML = '<option value="">Ninguna tarea</option>' + open.map((t) => `<option value="${t.id}" ${t.id === state.selectedTask ? 'selected' : ''}>#${t.id} · ${escapeHtml(t.title)}</option>`).join('');
+}
+
+$('#tema').addEventListener('change', (e) => { state.prefs.tema = e.target.value; store.set(PREFS_KEY, state.prefs); renderStaged(); renderBrowser(); });
+$('#tipo').addEventListener('change', (e) => { state.prefs.type = e.target.value; state.prefs.typeTouched = true; renderStaged(); });
+$('#tarea').addEventListener('change', (e) => { state.selectedTask = Number(e.target.value) || null; renderTasks(); });
+$('#clear').addEventListener('click', () => { state.staged = []; state.prefs.typeTouched = false; renderStaged(); });
+$('#upload').addEventListener('click', upload);
+
+function renderStaged() {
+  const box = $('#staged');
+  const has = state.staged.length > 0;
+  $('#stage').hidden = !has;
+  drop.classList.toggle('compact', has);
+  if (!has) return;
+  renderStageControls();
+  const existing = new Set(state.files.map((f) => f.path));
+  box.innerHTML = state.staged.map((s, i) => {
+    const dest = destFor(s.rel);
+    return `<li data-i="${i}">
+      <div class="fmain"><span class="fname">${escapeHtml(s.rel)}</span><span class="fsize">${fmtSize(s.file.size)}</span></div>
+      <div class="fdest">${existing.has(dest) ? '<span class="tag">nueva versión</span>' : ''}${escapeHtml(dest)}</div>
+      <div class="bar"><span style="width:${Math.round((s.progress || 0) * 100)}%"></span></div>
+    </li>`;
+  }).join('');
+  const total = state.staged.reduce((a, s) => a + s.file.size, 0);
+  $('#upload').textContent = `Subir ${state.staged.length} archivo${state.staged.length > 1 ? 's' : ''} (${fmtSize(total)})`;
+  const noName = state.staged.filter((s) => /\.(als|wav)$/i.test(s.rel) && !/_v\d+/i.test(s.rel.split('/').pop()));
+  $('#name-hint').hidden = !noName.length;
+}
+
+function setProgress(i, p) {
+  state.staged[i].progress = p;
+  const bar = document.querySelector(`#staged li[data-i="${i}"] .bar span`);
+  if (bar) bar.style.width = Math.round(p * 100) + '%';
+}
+
+async function upload() {
+  if (state.busy || !state.staged.length) return;
+  state.busy = true;
+  const btn = $('#upload');
+  btn.disabled = true;
+  $('#clear').disabled = true;
+  const note = $('#note').value.trim();
+  const taskId = Number($('#tarea').value) || null;
+  try {
+    const exts = await state.az.lfsExtensions();
+    const prepared = [];
+    for (let i = 0; i < state.staged.length; i++) {
+      const s = state.staged[i];
+      const path = destFor(s.rel);
+      if (isLfsPath(path, exts)) {
+        btn.textContent = `Preparando ${s.rel}…`;
+        const oid = await hashBlob(s.file, (p) => setProgress(i, p * 0.15));
+        btn.textContent = `Subiendo ${i + 1} de ${state.staged.length}…`;
+        await uploadWithProgress(state.az, { oid, size: s.file.size }, s.file, (p) => setProgress(i, 0.15 + p * 0.85));
+        prepared.push({ path, text: pointerText(oid, s.file.size), oid });
+      } else {
+        prepared.push({ path, base64: await toBase64(s.file) });
+        setProgress(i, 1);
+      }
+    }
+    btn.textContent = 'Guardando en el repositorio…';
+    const commit = await pushWithRetry(prepared, note, taskId);
+    if (commit) {
+      if (taskId) await state.az.afterUpload(taskId, commit, prepared.map((p) => p.path), note);
+      toast(taskId ? `Subido y apuntado en la tarea #${taskId}` : 'Subido');
+    } else {
+      toast('Esos archivos ya estaban subidos tal cual, no había nada nuevo');
+    }
+    state.staged = [];
+    state.prefs.typeTouched = false;
+    $('#note').value = '';
+    store.set(PREFS_KEY, state.prefs);
+    await Promise.all([loadFiles(), loadTasks()]);
+    renderStaged();
+  } catch (e) {
+    toast('No se pudo subir: ' + e.message + '. Vuelve a pulsar Subir; lo que ya estaba subido no se repite.', 'error');
+  } finally {
+    state.busy = false;
+    btn.disabled = false;
+    $('#clear').disabled = false;
+    renderStaged();
+  }
+}
+
+async function pushWithRetry(prepared, note, taskId) {
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const head = await state.az.getHead();
+    const files = await state.az.listFiles();
+    const byPath = Object.fromEntries(files.map((f) => [f.path, f]));
+    const changes = [];
+    for (const p of prepared) {
+      const cur = byPath[p.path];
+      if (cur && p.oid) {
+        const ptr = parsePointer(await state.az.blobText(cur.objectId).catch(() => ''));
+        if (ptr && ptr.oid === p.oid) continue;
+      }
+      changes.push({ path: p.path, kind: cur ? 'edit' : 'add', text: p.text, base64: p.base64 });
+    }
+    if (!changes.length) return null;
+    const names = changes.map((c) => c.path.split('/').pop());
+    const summary = names.length === 1 ? names[0] : `${names.length} archivos (${names.slice(0, 3).join(', ')}${names.length > 3 ? '…' : ''})`;
+    const comment = `Subida: ${summary}${note ? `\n\n${note}` : ''}${taskId ? `\n\nTarea #${taskId}` : ''}`;
+    try {
+      return await state.az.push({ changes, comment, oldObjectId: head });
+    } catch (e) {
+      if (e.status !== 409 && !/TF401028|stale|conflict|has already been updated/i.test(e.message)) throw e;
+    }
+  }
+  throw new Error('el repositorio cambió mientras subías');
+}
+
+// fetch no informa del progreso de subida; XMLHttpRequest sí.
+async function uploadWithProgress(az, obj, file, onProgress) {
+  const [o] = await az.lfsBatch('upload', [obj]);
+  const up = o.actions && o.actions.upload;
+  if (!up) { onProgress(1); return; }
+  const u = new URL(up.href);
+  u.username = '';
+  u.password = '';
+  await new Promise((resolve, reject) => {
+    const x = new XMLHttpRequest();
+    x.open('PUT', u.toString());
+    x.setRequestHeader('Authorization', az.auth);
+    x.setRequestHeader('Accept', 'application/vnd.git-lfs');
+    x.setRequestHeader('Content-Type', 'application/octet-stream');
+    x.upload.onprogress = (e) => e.lengthComputable && onProgress(e.loaded / e.total);
+    x.onload = () => (x.status < 300 ? resolve() : reject(new Error(`el servidor respondió ${x.status}`)));
+    x.onerror = () => reject(new Error('se cortó la conexión'));
+    x.send(file);
+  });
+}
+
+function toBase64(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(String(r.result).split(',')[1] || '');
+    r.onerror = () => rej(r.error);
+    r.readAsDataURL(file);
+  });
+}
+
+function fmtSize(n) {
+  if (n < 1024) return n + ' B';
+  if (n < 1024 ** 2) return (n / 1024).toFixed(0) + ' KB';
+  if (n < 1024 ** 3) return (n / 1024 ** 2).toFixed(1) + ' MB';
+  return (n / 1024 ** 3).toFixed(2) + ' GB';
+}
+
+let toastTimer;
+function toast(msg, kind = 'ok') {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + kind;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => (t.className = 'toast'), kind === 'error' ? 9000 : 4000);
+}
+
+$('#refresh').addEventListener('click', async () => {
+  try { await Promise.all([loadTasks(), loadFiles()]); toast('Actualizado'); } catch (e) { toast(e.message, 'error'); }
+});
+window.addEventListener('beforeunload', (e) => { if (state.busy) { e.preventDefault(); e.returnValue = ''; } });
+
+start();
+
+</script>
+</body>
+</html>
